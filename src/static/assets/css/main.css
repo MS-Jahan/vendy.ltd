@@ -1672,16 +1672,28 @@ a:hover {
   line-height: 1.5;
 }
 
-.footer-contact p {
-  margin-bottom: 0.5rem;
+.footer-contact {
+  margin: 1rem 0 0;
 }
 
-.footer-contact p a:not(.btn) {
+.footer-contact a {
   display: inline-block;
   margin-right: 0.75rem;
 }
 
+/* The contact band above already shows these */
+main:has(.cta-band) + .site-footer .footer-contact {
+  display: none;
+}
+
+.footer-nav ul {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  column-gap: 2.5rem;
+}
+
 .copyright {
+  margin: 0;
   color: rgba(242, 242, 243, 0.75);
 }
 
@@ -1698,8 +1710,12 @@ a:hover {
 
 @media (min-width: 900px) {
   .footer-grid {
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr) auto;
+    grid-template-columns: minmax(0, 1.6fr) auto minmax(0, 1fr);
     gap: 2.5rem;
+  }
+
+  .copyright {
+    text-align: right;
   }
 }
 
