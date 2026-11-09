@@ -2258,6 +2258,11 @@ main:has(.cta-band) + .site-footer .footer-contact {
   opacity: 1;
 }
 
+/* The front player stalled or paused: fade it out so YouTube's UI is not seen */
+.loop-video.is-stalled iframe.is-front {
+  opacity: 0;
+}
+
 @media (max-width: 719px) {
   .loop-video iframe,
   .loop-video .loop-poster {

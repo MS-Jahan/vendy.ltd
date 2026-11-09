@@ -225,7 +225,7 @@
         var back = other(front);
         var c = clips[nextIdx];
         var lead = Math.min(PREROLL, Math.max(1, (clips[curIdx].end - clips[curIdx].start) / 2));
-        isReady[back] = false;
+        isReady[back] = false; good[back] = 0; last[back] = -1;
         pl[back].mute();
         pl[back].loadVideoById({
           videoId: c.id,
@@ -241,11 +241,43 @@
         nextIdx = (nextIdx + 1) % clips.length;
         preStarted = false;
         showFront();
-        setTimeout(function () { isReady[old] = false; pl[old].stopVideo(); }, 600);
+        setTimeout(function () { isReady[old] = false; good[old] = 0; last[old] = -1; pl[old].stopVideo(); }, 600);
+      };
+
+      var last = [-1, -1];
+      var good = [0, 0];
+      var offSince = [0, 0];
+
+      /* A player counts as "really playing" only when its time advances on two
+         checks in a row. If the front one stalls or pauses for >1.2s it is faded
+         out, so YouTube's pause / loading UI is never on screen. */
+      var watch = function (n) {
+        var p = pl[n];
+        var st = -2, t = 0;
+        try { st = p.getPlayerState(); t = p.getCurrentTime(); } catch (err) { return; }
+        if (st === 1) {
+          offSince[n] = 0;
+          if (t > last[n]) { good[n] += 1; }
+          last[n] = t;
+        } else {
+          good[n] = 0;
+          last[n] = -1;
+          if (!offSince[n]) { offSince[n] = Date.now(); }
+        }
+        isReady[n] = good[n] > 1;
       };
 
       var tick = function () {
-        if (!visible || !pl[front] || !pl[front].getCurrentTime || !isReady[front]) { return; }
+        if (!pl[0] || !pl[1] || !pl[0].getPlayerState || !pl[1].getPlayerState) { return; }
+        watch(0);
+        watch(1);
+        if (!visible) { return; }
+        var stalled = !isReady[front] && offSince[front] && Date.now() - offSince[front] > 1200;
+        loopBox.classList.toggle("is-stalled", !!stalled);
+        if (!isReady[front]) {
+          if (offSince[front] && pl[front].getPlayerState() !== 3) { try { pl[front].playVideo(); } catch (err) {} }
+          return;
+        }
         var c = clips[curIdx];
         var t = pl[front].getCurrentTime();
         var lead = Math.min(PREROLL, Math.max(1, (c.end - c.start) / 2));
@@ -255,22 +287,14 @@
 
       var onState = function (n) {
         return function (e) {
-          if (e.data === 1) {
-            isReady[n] = true;
-            if (n === front && !coverTimer) {
-              coverTimer = setTimeout(function () { loopBox.classList.add("is-playing"); }, COVER_MS);
-            }
+          if (e.data === 1 && n === front && !coverTimer) {
+            coverTimer = setTimeout(function () { loopBox.classList.add("is-playing"); }, COVER_MS);
           }
           /* Front clip ended before the next one was ready: switch as soon as it is */
-          if (e.data === 0 && n === front && preStarted) {
+          if (e.data === 0 && n === front) {
+            if (!preStarted) { startPreroll(); }
             var wait = setInterval(function () {
               if (isReady[other(front)]) { clearInterval(wait); swap(); }
-            }, 100);
-          }
-          if (e.data === 0 && n === front && !preStarted) {
-            startPreroll();
-            var wait2 = setInterval(function () {
-              if (isReady[other(front)]) { clearInterval(wait2); swap(); }
             }, 100);
           }
         };
@@ -296,12 +320,17 @@
           videoId: clip.id,
           playerVars: {
             autoplay: autoplay, mute: 1, controls: 0, disablekb: 1, fs: 0, rel: 0,
-            iv_load_policy: 3, modestbranding: 1, playsinline: 1,
+            iv_load_policy: 3, modestbranding: 1, playsinline: 1, enablejsapi: 1,
             start: clip.start, end: clip.end + TAIL,
             origin: window.location.origin
           },
           events: {
-            onReady: function (e) { e.target.mute(); if (autoplay) { e.target.playVideo(); } },
+            onReady: function (e) {
+              e.target.mute();
+              if (autoplay) { e.target.playVideo(); }
+              var fr = e.target.getIframe && e.target.getIframe();
+              if (fr) { fr.setAttribute("tabindex", "-1"); fr.setAttribute("title", ""); fr.setAttribute("aria-hidden", "true"); if ("inert" in fr) { fr.inert = true; } }
+            },
             onStateChange: onState(n),
             onError: onErr(n)
           }
