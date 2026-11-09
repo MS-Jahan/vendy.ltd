@@ -13,6 +13,7 @@ Each page in src/pages/ starts with a front-matter comment:
 Placeholders {{key}} are filled from site.json, the page front matter,
 and nav_<key> flags (" aria-current" on the active nav link).
 """
+import hashlib
 import json
 import re
 import shutil
@@ -110,6 +111,11 @@ def main():
     partials = {name: (SRC / "partials" / f"{name}.html").read_text(encoding="utf-8") for name in ("head", "header", "footer")}
     base_values = {k: v for k, v in SITE.items()}
     base_values["site_url"] = SITE["site_url"]
+    # Cache-busting version for CSS/JS URLs (Cloudflare caches them for hours)
+    digest = hashlib.sha1()
+    for asset in ("assets/css/main.css", "assets/js/main.js"):
+        digest.update((SRC / "static" / asset).read_bytes())
+    base_values["asset_v"] = digest.hexdigest()[:10]
 
     paths = []
     for page in sorted((SRC / "pages").glob("*.html")):

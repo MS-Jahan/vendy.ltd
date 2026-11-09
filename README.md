@@ -24,6 +24,13 @@ Needs Python 3. It wipes and recreates `dist/`. Placeholders such as `{{phone}}`
 
 To preview, serve `dist/` with any static server, for example `python3 -m http.server -d dist 8080`. This does not apply the `.htaccess` rules.
 
+## Pages, sitemap and redirects
+
+- Pages: Home, Products, About Us, Resources, Our Team, Contact Us (plus 404). Tutorials, FAQ's and Vending Machine FAQ's now live on `/resources/` as sections (`#tutorials`, `#faqs`, `#vending-faqs`).
+- `sitemap.xml` is generated from `src/pages/` on every build, so a deleted page drops out by itself. `robots.txt` allows everything and points to the sitemap.
+- Old URLs (`/tutorials/`, `/faqs/`, `/vending_details/` and the WordPress `?page_id=` links) 301-redirect to the right section in `src/static/.htaccess`. When you remove a page, add a redirect there and delete its folder on the server (the deploy never deletes).
+- CSS and JS URLs carry a content hash (`?v=...`) added by `build.py`, so Cloudflare serves new files right after a deploy.
+
 ## Editing
 
 - Change text in `src/pages/*.html`, then rebuild.
