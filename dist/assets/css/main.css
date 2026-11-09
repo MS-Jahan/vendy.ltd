@@ -663,17 +663,26 @@ a:hover {
   text-decoration: none;
 }
 
+/* The stage is a size container so each machine can shrink to fit its column.
+   Without this the box was squeezed narrower than its photo ratio (--ar) on
+   phones and tablets, which moved the photo inside it and left the machines
+   floating off the ground line. 0.629 is the widest ratio (HVu120). */
 .stage {
+  --stage-h: 170px;
+  --stage-pad: 0.25rem;
+  container-type: inline-size;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  height: 170px;
-  padding-inline: 0.5rem;
+  height: var(--stage-h);
+  padding-inline: var(--stage-pad);
   border-bottom: 1px solid var(--color-text);
 }
 
 .stage .machine {
+  flex: none;
   height: calc(100% * var(--rel));
+  height: calc(min(var(--stage-h), (100cqw - 2 * var(--stage-pad)) / 0.629) * var(--rel));
   transition: opacity 0.3s;
 }
 
@@ -708,8 +717,8 @@ a:hover {
 
 @media (min-width: 720px) {
   .stage {
-    height: 380px;
-    padding-inline: 0.75rem;
+    --stage-h: 380px;
+    --stage-pad: 0.75rem;
   }
 
   .lineup li + li .lineup-label {

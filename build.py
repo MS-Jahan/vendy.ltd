@@ -372,6 +372,7 @@ def main():
     partials = {name: (SRC / "partials" / f"{name}.html").read_text(encoding="utf-8") for name in ("head", "header", "footer")}
     base_values = flatten(SITE)
     base_values.update(derived_values())
+    base_values.setdefault("head_extra", "")
     for key, doc in SITE.get("docs", {}).items():
         base_values[f"doc_text.{key}"] = render_doc_text(doc["title"], doc_blocks(key, doc["url"]))
     # Cache-busting version for CSS/JS URLs (Cloudflare caches them for hours)

@@ -195,7 +195,7 @@
     if (clips.length > 1) {
       var TAIL = 2;           /* keep playing this long past the clip end so YouTube never shows its ended / replay screen */
       var PREROLL = 6;       /* seconds the next clip plays hidden before the fade */
-      var COVER_MS = 4500;    /* first clip stays behind the still image this long */
+      var COVER_MS = 400;     /* still image stays this long after the first clip is really playing */
       var coverTimer = null;
       var targets = loopBox.querySelectorAll(".loop-target");
       var pl = [null, null];
@@ -204,14 +204,7 @@
       var curIdx = 0;
       var nextIdx = 1;
       var preStarted = false;
-      var visible = true;
-
-      ["https://www.youtube-nocookie.com", "https://i.ytimg.com"].forEach(function (href) {
-        var l = document.createElement("link");
-        l.rel = "preconnect";
-        l.href = href;
-        document.head.appendChild(l);
-      });
+      var visible = !("IntersectionObserver" in window);
 
       var other = function (n) { return n === 0 ? 1 : 0; };
       var showFront = function () {
@@ -271,12 +264,21 @@
         if (!pl[0] || !pl[1] || !pl[0].getPlayerState || !pl[1].getPlayerState) { return; }
         watch(0);
         watch(1);
-        if (!visible) { return; }
-        var stalled = !isReady[front] && offSince[front] && Date.now() - offSince[front] > 1200;
+        if (!visible) {
+          /* Off screen: keep what is buffered but stop playing, and hide the
+             paused player so YouTube's paused UI is never seen */
+          if (pl[front].getPlayerState() === 1) { try { pl[front].pauseVideo(); } catch (err) {} }
+          loopBox.classList.add("is-stalled");
+          return;
+        }
+        var stalled = !isReady[front] && (!offSince[front] || Date.now() - offSince[front] > 1200);
         loopBox.classList.toggle("is-stalled", !!stalled);
         if (!isReady[front]) {
           if (offSince[front] && pl[front].getPlayerState() !== 3) { try { pl[front].playVideo(); } catch (err) {} }
           return;
+        }
+        if (!coverTimer) {
+          coverTimer = setTimeout(function () { loopBox.classList.add("is-playing"); }, COVER_MS);
         }
         var c = clips[curIdx];
         var t = pl[front].getCurrentTime();
@@ -287,9 +289,6 @@
 
       var onState = function (n) {
         return function (e) {
-          if (e.data === 1 && n === front && !coverTimer) {
-            coverTimer = setTimeout(function () { loopBox.classList.add("is-playing"); }, COVER_MS);
-          }
           /* Front clip ended before the next one was ready: switch as soon as it is */
           if (e.data === 0 && n === front) {
             if (!preStarted) { startPreroll(); }
@@ -353,25 +352,14 @@
         }, { threshold: 0.1 }).observe(loopBox);
       }
 
-      /* Load the YouTube script only once the video is near the screen, so it
-         does not compete with the first paint (the video sits below the slider) */
-      var apiLoaded = false;
-      var loadApi = function () {
-        if (apiLoaded) { return; }
-        apiLoaded = true;
-        var apiScript = document.createElement("script");
-        apiScript.src = "https://www.youtube.com/iframe_api";
-        apiScript.async = true;
-        document.head.appendChild(apiScript);
-      };
-      if ("IntersectionObserver" in window) {
-        var near = new IntersectionObserver(function (entries) {
-          if (entries[0].isIntersecting) { near.disconnect(); loadApi(); }
-        }, { rootMargin: "400px 0px" });
-        near.observe(loopBox);
-      } else {
-        loadApi();
-      }
+      /* Load the YouTube script as soon as this script runs (it is deferred, so
+         after the page has been parsed). On phones the video is on screen at
+         load, so every 100 ms here is a 100 ms later start. The home page also
+         preconnects to YouTube in <head> (head_extra). */
+      var apiScript = document.createElement("script");
+      apiScript.src = "https://www.youtube.com/iframe_api";
+      apiScript.async = true;
+      document.head.appendChild(apiScript);
     }
   }
 })();
