@@ -77,6 +77,12 @@ jobs:
             *) echo "::error::Unknown FTP_PROTOCOL=$FTP_PROTOCOL"; exit 2 ;;
           esac
 
+          # lftp appends the source basename ("dist") when the target ends with a
+          # slash, which would create <dir>/dist/. Strip it so the CONTENTS of
+          # dist/ land directly in the target ("./" becomes ".").
+          target="${FTP_SERVER_DIR%/}"
+          [ -z "$target" ] && target="."
+
           opts="--reverse --ignore-time --parallel=1 --verbose=$VERBOSE"
           [ "$DELETE" = "true" ] && opts="$opts --delete"
           [ "$DRY_RUN" = "true" ] && opts="$opts --dry-run"
@@ -92,10 +98,10 @@ jobs:
           set net:timeout 60
           set cmd:fail-exit yes
           open --env-password --user "$FTP_USER" -p "$FTP_PORT" "$scheme://$FTP_SERVER"
-          mkdir -f -p "$FTP_SERVER_DIR"
-          mirror $opts "dist" "$FTP_SERVER_DIR"
+          mkdir -f -p "$target"
+          mirror $opts "dist" "$target"
           bye
           LFTP
 
-          echo "Deploying dist/ to $scheme://$FTP_SERVER/$FTP_SERVER_DIR (dry-run=$DRY_RUN delete=$DELETE)"
+          echo "Deploying dist/ to $scheme://$FTP_SERVER/$target (dry-run=$DRY_RUN delete=$DELETE)"
           lftp --norc -f "$RUNNER_TEMP/deploy.lftp"
