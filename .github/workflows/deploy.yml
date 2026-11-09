@@ -2,6 +2,8 @@
 # Builds src/ -> dist/ with build.py, then uploads dist/ into FTP_SERVER_DIR
 # using lftp (reconnect-tolerant, one connection, password via env, never on disk).
 # Files on the server that are not in dist/ are left alone unless `delete` is set.
+# No --ignore-time: with it lftp compares sizes only and skips same-size edits
+# (e.g. a new asset hash in index.html). Fresh build files are newer, so all upload.
 name: Deploy (FTP)
 
 on:
@@ -83,7 +85,7 @@ jobs:
           target="${FTP_SERVER_DIR%/}"
           [ -z "$target" ] && target="."
 
-          opts="--reverse --ignore-time --parallel=1 --verbose=$VERBOSE"
+          opts="--reverse --parallel=1 --verbose=$VERBOSE"
           [ "$DELETE" = "true" ] && opts="$opts --delete"
           [ "$DRY_RUN" = "true" ] && opts="$opts --dry-run"
 
