@@ -193,6 +193,7 @@
     var clips = [];
     try { clips = JSON.parse(loopBox.getAttribute("data-clips")) || []; } catch (err) { clips = []; }
     if (clips.length > 1) {
+      var TAIL = 2;           /* keep playing this long past the clip end so YouTube never shows its ended / replay screen */
       var PREROLL = 6;       /* seconds the next clip plays hidden before the fade */
       var COVER_MS = 4500;    /* first clip stays behind the still image this long */
       var coverTimer = null;
@@ -229,7 +230,7 @@
         pl[back].loadVideoById({
           videoId: c.id,
           startSeconds: Math.max(0, c.start - lead),
-          endSeconds: c.end
+          endSeconds: c.end + TAIL
         });
       };
 
@@ -249,7 +250,7 @@
         var t = pl[front].getCurrentTime();
         var lead = Math.min(PREROLL, Math.max(1, (c.end - c.start) / 2));
         if (!preStarted && t >= c.end - lead) { startPreroll(); }
-        if (preStarted && t >= c.end - 0.25 && isReady[other(front)]) { swap(); }
+        if (preStarted && t >= c.end - 0.1 && isReady[other(front)]) { swap(); }
       };
 
       var onState = function (n) {
@@ -296,7 +297,7 @@
           playerVars: {
             autoplay: autoplay, mute: 1, controls: 0, disablekb: 1, fs: 0, rel: 0,
             iv_load_policy: 3, modestbranding: 1, playsinline: 1,
-            start: clip.start, end: clip.end,
+            start: clip.start, end: clip.end + TAIL,
             origin: window.location.origin
           },
           events: {
