@@ -12,13 +12,16 @@
 <meta property="og:url" content="https://vendy.ltd/products/">
 <meta property="og:site_name" content="Vendy Ltd">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://vendy.ltd/assets/img/hero-1.webp">
-<meta property="og:image:width" content="1600">
-<meta property="og:image:height" content="740">
+<meta property="og:image" content="https://vendy.ltd/assets/img/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vendy Ltd: vending machines made in Bangladesh, with the HVu120 and FTu25 models">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Vending Machines & Prices | Vendy Ltd">
 <meta name="twitter:description" content="Vendy builds vending machines for Bangladesh with mobile payments, Wi-Fi monitoring and steel bodies. Compare four models from ৳25,000 to ৳60,000.">
-<meta name="twitter:image" content="https://vendy.ltd/assets/img/hero-1.webp">
+<meta name="twitter:image" content="https://vendy.ltd/assets/img/og-image.jpg">
+<meta name="twitter:image:alt" content="Vendy Ltd: vending machines made in Bangladesh, with the HVu120 and FTu25 models">
 <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -29,24 +32,211 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Vendy Ltd",
-  "url": "https://vendy.ltd/",
-  "logo": "https://vendy.ltd/assets/img/logo.png",
-  "telephone": "+8801714890252",
-  "email": "info@vendy.ltd",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "13055, Islambag, Satarkul, Uttor Badda, Satarkul Road, Behind the Chapra Masjid [Islambag Jameah Masjid]",
-    "addressLocality": "Dhaka",
-    "postalCode": "1212",
-    "addressCountry": "BD"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "23.783346",
-    "longitude": "90.392298"
-  }
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://vendy.ltd/#website",
+      "url": "https://vendy.ltd/",
+      "name": "Vendy Ltd",
+      "publisher": {
+        "@id": "https://vendy.ltd/#business"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://vendy.ltd/#business",
+      "name": "Vendy Ltd",
+      "url": "https://vendy.ltd/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://vendy.ltd/icon-192.png",
+        "width": 192,
+        "height": 192
+      },
+      "image": "https://vendy.ltd/assets/img/og-image.jpg",
+      "telephone": "+8801714890252",
+      "email": "info@vendy.ltd",
+      "priceRange": "৳25,000-৳60,000",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "13055, Islambag, Satarkul, Uttor Badda, Satarkul Road, Behind the Chapra Masjid [Islambag Jameah Masjid]",
+        "addressLocality": "Dhaka",
+        "postalCode": "1212",
+        "addressCountry": "BD"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "23.783346",
+        "longitude": "90.392298"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Bangladesh"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "telephone": "+8801714890252",
+        "email": "info@vendy.ltd",
+        "areaServed": "BD",
+        "availableLanguage": [
+          "English",
+          "Bengali"
+        ]
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday"
+          ],
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/vendy.ltd"
+      ]
+    },
+    {
+      "@type": "Product",
+      "@id": "https://vendy.ltd/products/#ftu25",
+      "name": "FTu25 LC Folding Tray Model",
+      "sku": "FTu25",
+      "description": "Wall-mounted sanitary pad vending machine with a tray magazine for up to 25 pads, built-in Wi-Fi monitoring, a steel body and cashless, RFID or scratch-card payment.",
+      "image": [
+        "https://vendy.ltd/assets/img/product-ftu25.webp"
+      ],
+      "category": "Vending machines",
+      "brand": {
+        "@type": "Brand",
+        "name": "Vendy"
+      },
+      "manufacturer": {
+        "@id": "https://vendy.ltd/#business"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://vendy.ltd/products/#ftu25",
+        "price": "35000",
+        "priceCurrency": "BDT",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://vendy.ltd/#business"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://vendy.ltd/products/#hvu120",
+      "name": "HVu120 Hygiene Vendy Spiral Model",
+      "sku": "HVu120",
+      "description": "Hygiene vending machine with a single spiral magazine for up to 120 pads, built-in Wi-Fi monitoring, a steel body (45 kg) and coin, cashless or RFID payment.",
+      "image": [
+        "https://vendy.ltd/assets/img/product-hvu120.webp"
+      ],
+      "category": "Vending machines",
+      "brand": {
+        "@type": "Brand",
+        "name": "Vendy"
+      },
+      "manufacturer": {
+        "@id": "https://vendy.ltd/#business"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://vendy.ltd/products/#hvu120",
+        "price": "60000",
+        "priceCurrency": "BDT",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://vendy.ltd/#business"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://vendy.ltd/products/#hvu20",
+      "name": "HVu20 Hygiene Vendy Spiral Model",
+      "sku": "HVu20",
+      "description": "Compact hygiene vending machine with a single spiral magazine for up to 20 pads, built-in Wi-Fi monitoring, a steel body (10 kg) and coin, cashless or RFID payment.",
+      "image": [
+        "https://vendy.ltd/assets/img/product-hvu20.webp"
+      ],
+      "category": "Vending machines",
+      "brand": {
+        "@type": "Brand",
+        "name": "Vendy"
+      },
+      "manufacturer": {
+        "@id": "https://vendy.ltd/#business"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://vendy.ltd/products/#hvu20",
+        "price": "25000",
+        "priceCurrency": "BDT",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://vendy.ltd/#business"
+        }
+      }
+    },
+    {
+      "@type": "Product",
+      "@id": "https://vendy.ltd/products/#hvu40-60",
+      "name": "HVu40/60 Hygiene Vendy Spiral Model",
+      "sku": "HVu40/60",
+      "description": "Hygiene vending machine with a double spiral magazine for up to 40 pads, built-in Wi-Fi monitoring, a steel body (27 kg) and coin, cashless or RFID payment.",
+      "image": [
+        "https://vendy.ltd/assets/img/product-hvu40-60.webp"
+      ],
+      "category": "Vending machines",
+      "brand": {
+        "@type": "Brand",
+        "name": "Vendy"
+      },
+      "manufacturer": {
+        "@id": "https://vendy.ltd/#business"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://vendy.ltd/products/#hvu40-60",
+        "price": "40000",
+        "priceCurrency": "BDT",
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@id": "https://vendy.ltd/#business"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://vendy.ltd/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Products",
+          "item": "https://vendy.ltd/products/"
+        }
+      ]
+    }
+  ]
 }
 </script>
 <!-- Google Tag Manager -->

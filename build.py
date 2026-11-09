@@ -162,6 +162,119 @@ def render_doc_text(title, blocks):
 
 
 
+# ---------------------------------------------------------------------------
+# Structured data (JSON-LD). Everything comes from site.json, nothing is typed
+# into the templates: business, hours, social links, logo, products, prices.
+# ---------------------------------------------------------------------------
+def taka(amount, spaced=True):
+    return ("\u09f3 " if spaced else "\u09f3") + f"{int(amount):,}"
+
+
+def derived_values():
+    """Values computed from site.json (formatted prices, absolute URLs)."""
+    base = SITE["site_url"]
+    out = {"og_image_url": base + SITE["og_image"]["path"], "logo_url": base + SITE["logo"]["path"]}
+    prices = [p["price"] for p in SITE["products"].values()]
+    out["price_min"] = taka(min(prices), spaced=False)
+    out["price_max"] = taka(max(prices), spaced=False)
+    for key, prod in SITE["products"].items():
+        out[f"products.{key}.price_display"] = taka(prod["price"])
+    return out
+
+
+def business_node():
+    base = SITE["site_url"]
+    addr = SITE["address_parts"]
+    prices = [p["price"] for p in SITE["products"].values()]
+    node = {
+        "@type": "LocalBusiness",
+        "@id": base + "/#business",
+        "name": SITE["name"],
+        "url": base + "/",
+        "logo": {"@type": "ImageObject", "url": base + SITE["logo"]["path"], "width": SITE["logo"]["width"], "height": SITE["logo"]["height"]},
+        "image": base + SITE["og_image"]["path"],
+        "telephone": SITE["phone_href"],
+        "email": SITE["email"],
+        "priceRange": f"{taka(min(prices), False)}-{taka(max(prices), False)}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": addr["street"],
+            "addressLocality": addr["locality"],
+            "postalCode": addr["postal_code"],
+            "addressCountry": addr["country"],
+        },
+        "geo": {"@type": "GeoCoordinates", "latitude": SITE["geo_lat"], "longitude": SITE["geo_lng"]},
+        "areaServed": {"@type": "Country", "name": "Bangladesh"},
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "telephone": SITE["phone_href"],
+            "email": SITE["email"],
+            "areaServed": "BD",
+            "availableLanguage": ["English", "Bengali"],
+        },
+    }
+    if SITE.get("hours"):
+        node["openingHoursSpecification"] = [
+            {"@type": "OpeningHoursSpecification", "dayOfWeek": h["days"], "opens": h["opens"], "closes": h["closes"]}
+            for h in SITE["hours"]
+        ]
+    if SITE.get("social"):
+        node["sameAs"] = list(SITE["social"].values())
+    return node
+
+
+def product_nodes():
+    base = SITE["site_url"]
+    dflt = SITE["product_defaults"]
+    nodes = []
+    for key, prod in SITE["products"].items():
+        url = f"{base}/products/#{key}"
+        nodes.append({
+            "@type": "Product",
+            "@id": url,
+            "name": prod["name"],
+            "sku": prod["code"],
+            "description": prod["description"],
+            "image": [base + prod["image"]],
+            "category": dflt["category"],
+            "brand": {"@type": "Brand", "name": dflt["brand"]},
+            "manufacturer": {"@id": base + "/#business"},
+            "offers": {
+                "@type": "Offer",
+                "url": url,
+                "price": str(prod["price"]),
+                "priceCurrency": dflt["currency"],
+                "availability": "https://schema.org/" + dflt["availability"],
+                "itemCondition": "https://schema.org/" + dflt["condition"],
+                "seller": {"@id": base + "/#business"},
+            },
+        })
+    return nodes
+
+
+def jsonld_for(meta):
+    base = SITE["site_url"]
+    graph = [
+        {"@type": "WebSite", "@id": base + "/#website", "url": base + "/", "name": SITE["name"],
+         "publisher": {"@id": base + "/#business"}, "inLanguage": "en"},
+        business_node(),
+    ]
+    if meta["path"] == "/products/":
+        graph += product_nodes()
+    if meta["path"] != "/" and meta.get("breadcrumb"):
+        graph.append({
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": base + "/"},
+                {"@type": "ListItem", "position": 2, "name": meta["breadcrumb"], "item": base + meta["path"]},
+            ],
+        })
+    data = {"@context": "https://schema.org", "@graph": graph}
+    body = json.dumps(data, ensure_ascii=False, indent=2).replace("</", "<\\/")
+    return '<script type="application/ld+json">\n' + body + "\n</script>"
+
+
 def fail(msg):
     sys.exit(f"build error: {msg}")
 
@@ -199,8 +312,10 @@ def output_path(page_path):
 
 def build_page(file_path, partials, base_values):
     meta, body = parse_page(file_path)
+    meta = {k: fill(v, base_values, file_path.name) for k, v in meta.items()}
     values = dict(base_values)
     values.update(meta)
+    values["jsonld"] = jsonld_for(meta)
     values["canonical"] = SITE["site_url"] + meta["path"]
     for key in NAV_KEYS:
         values["nav_" + key] = " aria-current=\"page\"" if meta.get("nav") == key else ""
@@ -256,6 +371,7 @@ def main():
 
     partials = {name: (SRC / "partials" / f"{name}.html").read_text(encoding="utf-8") for name in ("head", "header", "footer")}
     base_values = flatten(SITE)
+    base_values.update(derived_values())
     for key, doc in SITE.get("docs", {}).items():
         base_values[f"doc_text.{key}"] = render_doc_text(doc["title"], doc_blocks(key, doc["url"]))
     # Cache-busting version for CSS/JS URLs (Cloudflare caches them for hours)

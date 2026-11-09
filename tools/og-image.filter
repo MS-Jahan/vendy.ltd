@@ -1,0 +1,9 @@
+[2:v]scale=-1:500[a];
+[3:v]scale=-1:500[b];
+[0:v][a]overlay=x=470:y=65[t1];
+[t1][b]overlay=x=830:y=65[t2];
+[t2][1:v]overlay=x=70:y=70[t3];
+[t3]drawtext=fontfile=/usr/share/fonts/noto/NotoSans-Bold.ttf:text='Vendy Ltd':fontsize=70:fontcolor=0x1B1B1B:x=70:y=290,
+drawtext=fontfile=/usr/share/fonts/noto/NotoSans-Regular.ttf:text='Vending machines':fontsize=34:fontcolor=0x333333:x=72:y=385,
+drawtext=fontfile=/usr/share/fonts/noto/NotoSans-Regular.ttf:text='made in Bangladesh':fontsize=34:fontcolor=0x333333:x=72:y=430,
+drawtext=fontfile=/usr/share/fonts/noto/NotoSans-Bold.ttf:text='vendy.ltd':fontsize=30:fontcolor=0x0F6B4B:x=72:y=520[o]
