@@ -36,3 +36,25 @@ To preview, serve `dist/` with any static server, for example `python3 -m http.s
 Upload the contents of `dist/` to `public_html`. `.htaccess` forces HTTPS and the apex domain (`vendy.ltd`) and redirects old WordPress URLs to the new pages.
 
 Note: at the time of writing, `vendy.ltd` is redirected to Facebook by a Cloudflare rule, and `www.vendy.ltd` returns a 500 from the old hosting. Fix both before launch.
+
+## Deploy via GitHub Actions (FTP)
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) is manual (Actions tab > **Deploy (FTP)** > Run workflow). It runs `python3 build.py`, then uploads `dist/` to the cPanel folder in `FTP_SERVER_DIR` with `lftp`. Files already on the server that are not in `dist/` are left alone.
+
+| Input | Effect |
+|---|---|
+| `dry_run` | List what would transfer, upload nothing. |
+| `delete` | Also delete server files that are not in `dist/`. Use with care. |
+| `verbose_log` | Verbose lftp log. |
+
+Repository secrets (Settings > Secrets and variables > Actions):
+
+| Secret | Purpose |
+|---|---|
+| `FTP_SERVER` | Required. FTP hostname. |
+| `FTP_USER` / `FTP_PASS` | Required. cPanel FTP account. |
+| `FTP_SERVER_DIR` | Remote folder with trailing slash, relative to the FTP account root. Default `./` (the FTP account root). |
+| `FTP_PORT` | Optional, default `21`. |
+| `FTP_PROTOCOL` | `ftp` (default), `ftps` (explicit TLS, common on cPanel) or `ftps-legacy` (implicit, port 990). |
+
+Run it with `dry_run` first to confirm the target folder.
