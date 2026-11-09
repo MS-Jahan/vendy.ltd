@@ -193,7 +193,9 @@
     var clips = [];
     try { clips = JSON.parse(loopBox.getAttribute("data-clips")) || []; } catch (err) { clips = []; }
     if (clips.length > 1) {
-      var PREROLL = 4;
+      var PREROLL = 6;       /* seconds the next clip plays hidden before the fade */
+      var COVER_MS = 4500;    /* first clip stays behind the still image this long */
+      var coverTimer = null;
       var targets = loopBox.querySelectorAll(".loop-target");
       var pl = [null, null];
       var isReady = [false, false];
@@ -254,7 +256,9 @@
         return function (e) {
           if (e.data === 1) {
             isReady[n] = true;
-            if (n === front) { loopBox.classList.add("is-playing"); }
+            if (n === front && !coverTimer) {
+              coverTimer = setTimeout(function () { loopBox.classList.add("is-playing"); }, COVER_MS);
+            }
           }
           /* Front clip ended before the next one was ready: switch as soon as it is */
           if (e.data === 0 && n === front && preStarted) {
