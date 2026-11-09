@@ -2327,3 +2327,33 @@ main:has(.cta-band) + .site-footer .footer-contact {
 .res-intro {
   padding-bottom: 1.5rem;
 }
+
+/* Google Doc text for search engines: collapsed, readable on demand */
+.doc-text {
+  margin-top: 1rem;
+  border: var(--line);
+  background: var(--color-bg);
+}
+
+.doc-text summary {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.doc-text-body {
+  padding: 0 1rem 1rem;
+  line-height: 1.55;
+}
+
+.doc-text-body h3 {
+  margin: 0.5rem 0;
+  font-size: 1.125rem;
+}
+
+.doc-text-body p,
+.doc-text-body ul {
+  margin: 0.4rem 0;
+}

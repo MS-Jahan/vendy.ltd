@@ -10,5 +10,15 @@
   "address": "13055, Islambag, Satarkul, Uttor Badda, Satarkul Road, Behind the Chapra Masjid [Islambag Jameah Masjid], Dhaka 1212, Dhaka 1212.",
   "map_url": "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1852.0477577079764!2d90.39229765802015!3d23.783346071388053!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c797e548d20f%3A0xafc09c0eafba7ddb!2sVendy%20Ltd!5e0!3m2!1sen!2sbd!4v1583233084095!5m2!1sen!2sbd",
   "geo_lat": "23.783346",
-  "geo_lng": "90.392298"
+  "geo_lng": "90.392298",
+  "docs": {
+    "faqs": {
+      "title": "Frequently Asked Questions (FAQ’s)",
+      "url": "https://docs.google.com/document/d/e/2PACX-1vRXhE-q8pzv2jTdWpeVpaiK7frx8EnZq6rhoyU-f0zZLl48r13OKAU8jO85EgVJHA/pub"
+    },
+    "vending_faqs": {
+      "title": "Frequently Asked Questions For Vending Machines (FAQ’s)",
+      "url": "https://docs.google.com/document/d/e/2PACX-1vQgxWEVvmJl2d25oI-YRyu2b10HoDE78alfH3RQrmC83haXiVVIwT4XxvolyiEwgdRPbaErDd2660H2/pub"
+    }
+  }
 }
