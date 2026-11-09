@@ -34,7 +34,7 @@ To preview, serve `dist/` with any static server, for example `python3 -m http.s
 ## Editing
 
 - Change text in `src/pages/*.html`, then rebuild.
-- Change contact details in `site.json`. The contact form URL is still a placeholder (`PLACEHOLDER_FORM_ID`).
+- Change contact details in `site.json`. The contact form URL (`form_url`) is the Google Form at https://forms.gle/aVQzGni7F437acgb8.
 - A new page needs a front-matter comment and, for a navbar highlight, a `nav` key listed in `NAV_KEYS` in `build.py`.
 - Always rebuild and commit `dist/` together with `src/`.
 

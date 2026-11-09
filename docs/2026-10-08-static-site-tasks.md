@@ -13,7 +13,7 @@ Source: `src/`. Build: `python3 -I build.py` → `dist/` (stdlib only). Upload `
 - [x] Browser test (Playwright in Docker): no horizontal overflow at 375px or 1440px, slider, nav, video facade work, no JS errors (external GTM/YouTube blocked in sandbox only).
 
 ## Open
-- [ ] Client: real Google Form URL → `site.json` `form_url` (currently `PLACEHOLDER_FORM_ID`), then rebuild.
+- [x] Client: real Google Form URL → `site.json` `form_url` (currently `PLACEHOLDER_FORM_ID`), then rebuild.
 - [ ] Verify product photo mapping: cards use the first photo of each WP gallery in page order (FTu25 → `c67b27d4`, HVu120 → WhatsApp image, HVu20 → `DSC_0964`, HVu40/60 → `Untitled4`). Team photo mapping: Rudro = `WhatsApp-Image-2025-01-14`. Both inferred, confirm.
 - [ ] Verify HTTPS redirect rule on the real host (cannot test locally: needs TLS).
 - [ ] Test the Google Doc iframes on phone and desktop (height is tall, scrolls inside the frame).
