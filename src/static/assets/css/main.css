@@ -1422,19 +1422,28 @@ a:hover {
 }
 
 .slider-no {
+  flex: none;
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: clamp(1.375rem, 6vw, 1.75rem);
   font-weight: 600;
 }
 
+/* One line on every phone: the text scales with the screen and, on the very
+   narrowest ones, is cut with an ellipsis instead of wrapping to a second line */
 .slider-caption {
-  flex: 1 1 12rem;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
   color: var(--color-neutral-700);
+  font-size: clamp(0.8125rem, 3.7vw, 1rem);
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .slider-controls {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.25rem;
   margin-left: auto;
@@ -1446,6 +1455,21 @@ a:hover {
 
 .slider-dots {
   display: flex;
+}
+
+/* Narrow phones: the counter ("01 / 05") already shows the position, so drop the
+   dots and keep the large Pause and arrow buttons on one row */
+@media (max-width: 399px) {
+  .slider-dots {
+    display: none;
+  }
+
+  /* Own row under the counter and caption, so the caption keeps the full width */
+  .slider-controls {
+    flex: 0 0 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
 }
 
 .slider-dot {
