@@ -41,4 +41,5 @@ Business facts, SEO data and prices live in `site.json` only. `build.py` turns n
 Notes:
 - Each page's front matter needs `title`, `description`, `path` and, for inner pages, `breadcrumb` (feeds `BreadcrumbList`). Front matter may use placeholders (the Products description uses `{{price_min}}` and `{{price_max}}`).
 - The share image `src/static/assets/img/og-image.jpg` (1200x630) is a static file. To rebuild it: `ffmpeg -f lavfi -i color=c=white:s=1200x630 -i src/static/icon-192.png -i <product1> -i <product2> -/filter_complex tools/og-image.filter -map "[o]" -frames:v 1 -q:v 3 og-image.jpg` (inputs in that order; fonts are Noto Sans).
+- **Machines are listed cheapest first** (Home lineup, Products lineup, model tabs, detail sheets, compare table, schema). The `01..04` numbers follow that order, and the first model is the default one shown on the Products page. `build.py` fails with a clear message if a price change breaks the order: then reorder the blocks in `index.html` / `products.html` and renumber.
 - Only mark up what is true and visible on the site. Do not add `AggregateRating`, reviews, or stock claims without real data.

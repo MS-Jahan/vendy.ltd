@@ -54,20 +54,6 @@
     "category": "Vending machines"
   },
   "products": {
-    "ftu25": {
-      "code": "FTu25",
-      "name": "FTu25 LC Folding Tray Model",
-      "price": 35000,
-      "image": "/assets/img/product-ftu25.webp",
-      "description": "Wall-mounted sanitary pad vending machine with a tray magazine for up to 25 pads, built-in Wi-Fi monitoring, a steel body and cashless, RFID or scratch-card payment."
-    },
-    "hvu120": {
-      "code": "HVu120",
-      "name": "HVu120 Hygiene Vendy Spiral Model",
-      "price": 60000,
-      "image": "/assets/img/product-hvu120.webp",
-      "description": "Hygiene vending machine with a single spiral magazine for up to 120 pads, built-in Wi-Fi monitoring, a steel body (45 kg) and coin, cashless or RFID payment."
-    },
     "hvu20": {
       "code": "HVu20",
       "name": "HVu20 Hygiene Vendy Spiral Model",
@@ -75,12 +61,26 @@
       "image": "/assets/img/product-hvu20.webp",
       "description": "Compact hygiene vending machine with a single spiral magazine for up to 20 pads, built-in Wi-Fi monitoring, a steel body (10 kg) and coin, cashless or RFID payment."
     },
+    "ftu25": {
+      "code": "FTu25",
+      "name": "FTu25 LC Folding Tray Model",
+      "price": 35000,
+      "image": "/assets/img/product-ftu25.webp",
+      "description": "Wall-mounted sanitary pad vending machine with a tray magazine for up to 25 pads, built-in Wi-Fi monitoring, a steel body and cashless, RFID or scratch-card payment."
+    },
     "hvu40-60": {
       "code": "HVu40/60",
       "name": "HVu40/60 Hygiene Vendy Spiral Model",
       "price": 40000,
       "image": "/assets/img/product-hvu40-60.webp",
       "description": "Hygiene vending machine with a double spiral magazine for up to 40 pads, built-in Wi-Fi monitoring, a steel body (27 kg) and coin, cashless or RFID payment."
+    },
+    "hvu120": {
+      "code": "HVu120",
+      "name": "HVu120 Hygiene Vendy Spiral Model",
+      "price": 60000,
+      "image": "/assets/img/product-hvu120.webp",
+      "description": "Hygiene vending machine with a single spiral magazine for up to 120 pads, built-in Wi-Fi monitoring, a steel body (45 kg) and coin, cashless or RFID payment."
     }
   },
   "docs": {

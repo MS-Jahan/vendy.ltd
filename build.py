@@ -228,7 +228,7 @@ def product_nodes():
     base = SITE["site_url"]
     dflt = SITE["product_defaults"]
     nodes = []
-    for key, prod in SITE["products"].items():
+    for key, prod in sorted(SITE["products"].items(), key=lambda kv: kv[1]["price"]):
         url = f"{base}/products/#{key}"
         nodes.append({
             "@type": "Product",
@@ -279,6 +279,27 @@ def fail(msg):
     sys.exit(f"build error: {msg}")
 
 
+def check_product_order(name, body):
+    """Machines are always listed cheapest first. Fail the build if a page lists them in another order."""
+    expected = sorted(SITE["products"], key=lambda k: SITE["products"][k]["price"])
+    patterns = {
+        "lineup": r'<ul class="lineup">(.*?)</ul>',
+        "model tabs": r'<ul class="model-tabs">(.*?)</ul>',
+    }
+    found = {}
+    for label, pat in patterns.items():
+        m = re.search(pat, body, re.S)
+        if m:
+            found[label] = re.findall(r'(?:data-pick="|/products/#)([\w-]+)"', m.group(1))
+    found["detail sheets"] = re.findall(r'<article class="datasheet" id="([\w-]+)"', body)
+    found["compare table"] = re.findall(r'<tr data-row="([\w-]+)"', body)
+    for label, keys in found.items():
+        if keys and keys != expected:
+            fail(f"{name}: {label} must list the machines cheapest first ({', '.join(expected)}), found: {', '.join(keys)}. "
+                 "Reorder the blocks in the page (and the 01..04 numbers) after changing a price.")
+
+
+
 def parse_page(path):
     text = path.read_text(encoding="utf-8")
     match = FRONT_MATTER.match(text)
@@ -312,6 +333,7 @@ def output_path(page_path):
 
 def build_page(file_path, partials, base_values):
     meta, body = parse_page(file_path)
+    check_product_order(file_path.name, body)
     meta = {k: fill(v, base_values, file_path.name) for k, v in meta.items()}
     values = dict(base_values)
     values.update(meta)
