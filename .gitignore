@@ -7,3 +7,4 @@ __pycache__/
 .ftp-deploy-sync-state.json
 .envserveraccess
 .env*
+.playwright-mcp/

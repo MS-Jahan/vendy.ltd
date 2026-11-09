@@ -2131,12 +2131,12 @@ main:has(.cta-band) + .site-footer .footer-contact {
 
 /* Home: slideshow first, then the introduction and links to the pages */
 .slider-first {
-  padding-top: 1.5rem;
+  padding-top: 0.5rem;
 }
 
 @media (min-width: 900px) {
   .slider-first {
-    padding-top: 2.5rem;
+    padding-top: 0.75rem;
   }
 }
 
@@ -2217,4 +2217,108 @@ main:has(.cta-band) + .site-footer .footer-contact {
   .resources-page {
     padding-bottom: 4rem;
   }
+}
+
+/* Home: looping muted clips in one frame (YouTube player, chrome cropped away) */
+.loop-frame {
+  padding: 0.75rem;
+}
+
+.loop-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-accent-900);
+  pointer-events: none;
+}
+
+.loop-video iframe,
+.loop-video .loop-poster {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  transform: translate(-50%, -50%) scale(1.4);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Two stacked players: only the front one is visible, so loading, paused and
+   ended states of the other (title, pause icon, end screen) are never seen */
+.loop-video iframe {
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.loop-video iframe.is-front {
+  z-index: 2;
+  opacity: 1;
+}
+
+@media (max-width: 719px) {
+  .loop-video iframe,
+  .loop-video .loop-poster {
+    transform: translate(-50%, -50%) scale(1.7);
+  }
+}
+
+.loop-video .loop-poster {
+  z-index: 3;
+  object-fit: cover;
+  transition: opacity 0.4s ease;
+}
+
+.loop-video.is-playing .loop-poster {
+  opacity: 0;
+}
+
+/* Contact: WhatsApp QR code */
+.wa-qr {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.wa-qr-code {
+  flex: none;
+  line-height: 0;
+  background: #fff;
+  border: var(--line);
+}
+
+.wa-qr-code img {
+  display: block;
+  width: 132px;
+  height: 132px;
+}
+
+.wa-qr p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.wa-qr p span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+}
+
+/* Resources page: tutorials and FAQs in one place */
+.res-section {
+  scroll-margin-top: 5rem;
+  padding-bottom: 1rem;
+}
+
+.res-section > .wrap > h2 {
+  margin: 0 0 1.25rem;
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.res-intro {
+  padding-bottom: 1.5rem;
 }

@@ -17,11 +17,16 @@ RewriteRule ^$ /about/? [R=301,L]
 RewriteCond %{QUERY_STRING} (^|&)page_id=698(&|$)
 RewriteRule ^$ /our-team/? [R=301,L]
 RewriteCond %{QUERY_STRING} (^|&)page_id=685(&|$)
-RewriteRule ^$ /faqs/? [R=301,L]
+RewriteRule ^$ /resources/#faqs? [R=301,NE,L]
 RewriteCond %{QUERY_STRING} (^|&)page_id=865(&|$)
-RewriteRule ^$ /vending_details/? [R=301,L]
+RewriteRule ^$ /resources/#vending-faqs? [R=301,NE,L]
 RewriteCond %{QUERY_STRING} (^|&)page_id=683(&|$)
-RewriteRule ^$ /tutorials/? [R=301,L]
+RewriteRule ^$ /resources/#tutorials? [R=301,NE,L]
+
+# Pages merged into /resources/
+RewriteRule ^tutorials/?$ /resources/#tutorials [R=301,NE,L]
+RewriteRule ^faqs/?$ /resources/#faqs [R=301,NE,L]
+RewriteRule ^vending_details/?$ /resources/#vending-faqs [R=301,NE,L]
 
 # Removed WordPress pages and demo content
 # Empty WP page; the Resources section lives on /

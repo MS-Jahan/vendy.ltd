@@ -26,7 +26,7 @@ SITE = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 
 FRONT_MATTER = re.compile(r"\A\s*<!--(.*?)-->", re.S)
 PLACEHOLDER = re.compile(r"\{\{\s*([\w.-]+)\s*\}\}")
-NAV_KEYS = ["home", "products", "about", "resources", "tutorials", "faqs", "our-team", "contact-us"]
+NAV_KEYS = ["home", "products", "about", "resources", "our-team", "contact-us"]
 
 
 def fail(msg):

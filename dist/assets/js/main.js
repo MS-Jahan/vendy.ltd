@@ -185,4 +185,144 @@
       link.parentNode.replaceChild(frame, link);
     });
   });
+  /* Home: looping muted clips with no gaps. Two YouTube players are stacked.
+     The next clip starts playing hidden a few seconds before the current one
+     ends, then the two cross-fade. Each clip runs from start to end seconds. */
+  var loopBox = document.querySelector("[data-loop-video]");
+  if (loopBox && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+    var clips = [];
+    try { clips = JSON.parse(loopBox.getAttribute("data-clips")) || []; } catch (err) { clips = []; }
+    if (clips.length > 1) {
+      var PREROLL = 4;
+      var targets = loopBox.querySelectorAll(".loop-target");
+      var pl = [null, null];
+      var isReady = [false, false];
+      var front = 0;
+      var curIdx = 0;
+      var nextIdx = 1;
+      var preStarted = false;
+      var visible = true;
+
+      ["https://www.youtube-nocookie.com", "https://i.ytimg.com"].forEach(function (href) {
+        var l = document.createElement("link");
+        l.rel = "preconnect";
+        l.href = href;
+        document.head.appendChild(l);
+      });
+
+      var other = function (n) { return n === 0 ? 1 : 0; };
+      var showFront = function () {
+        loopBox.querySelectorAll("iframe").forEach(function (f, k) {
+          f.classList.toggle("is-front", k === front);
+        });
+      };
+
+      var startPreroll = function () {
+        preStarted = true;
+        var back = other(front);
+        var c = clips[nextIdx];
+        var lead = Math.min(PREROLL, Math.max(1, (clips[curIdx].end - clips[curIdx].start) / 2));
+        isReady[back] = false;
+        pl[back].mute();
+        pl[back].loadVideoById({
+          videoId: c.id,
+          startSeconds: Math.max(0, c.start - lead),
+          endSeconds: c.end
+        });
+      };
+
+      var swap = function () {
+        var old = front;
+        front = other(front);
+        curIdx = nextIdx;
+        nextIdx = (nextIdx + 1) % clips.length;
+        preStarted = false;
+        showFront();
+        setTimeout(function () { isReady[old] = false; pl[old].stopVideo(); }, 600);
+      };
+
+      var tick = function () {
+        if (!visible || !pl[front] || !pl[front].getCurrentTime || !isReady[front]) { return; }
+        var c = clips[curIdx];
+        var t = pl[front].getCurrentTime();
+        var lead = Math.min(PREROLL, Math.max(1, (c.end - c.start) / 2));
+        if (!preStarted && t >= c.end - lead) { startPreroll(); }
+        if (preStarted && t >= c.end - 0.25 && isReady[other(front)]) { swap(); }
+      };
+
+      var onState = function (n) {
+        return function (e) {
+          if (e.data === 1) {
+            isReady[n] = true;
+            if (n === front) { loopBox.classList.add("is-playing"); }
+          }
+          /* Front clip ended before the next one was ready: switch as soon as it is */
+          if (e.data === 0 && n === front && preStarted) {
+            var wait = setInterval(function () {
+              if (isReady[other(front)]) { clearInterval(wait); swap(); }
+            }, 100);
+          }
+          if (e.data === 0 && n === front && !preStarted) {
+            startPreroll();
+            var wait2 = setInterval(function () {
+              if (isReady[other(front)]) { clearInterval(wait2); swap(); }
+            }, 100);
+          }
+        };
+      };
+
+      var onErr = function (n) {
+        return function () {
+          if (n !== front) {
+            nextIdx = (nextIdx + 1) % clips.length;
+            if (preStarted) { startPreroll(); }
+          } else {
+            nextIdx = curIdx;
+            startPreroll();
+          }
+        };
+      };
+
+      var build = function (n, clip, autoplay) {
+        return new window.YT.Player(targets[n], {
+          host: "https://www.youtube-nocookie.com",
+          width: "100%",
+          height: "100%",
+          videoId: clip.id,
+          playerVars: {
+            autoplay: autoplay, mute: 1, controls: 0, disablekb: 1, fs: 0, rel: 0,
+            iv_load_policy: 3, modestbranding: 1, playsinline: 1,
+            start: clip.start, end: clip.end,
+            origin: window.location.origin
+          },
+          events: {
+            onReady: function (e) { e.target.mute(); if (autoplay) { e.target.playVideo(); } },
+            onStateChange: onState(n),
+            onError: onErr(n)
+          }
+        });
+      };
+
+      window.onYouTubeIframeAPIReady = function () {
+        pl[0] = build(0, clips[0], 1);
+        pl[1] = build(1, clips[1], 0);
+        showFront();
+        setInterval(tick, 200);
+      };
+
+      /* Pause while the video is off screen */
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (entries) {
+          visible = entries[0].isIntersecting;
+          if (!pl[front] || !pl[front].pauseVideo) { return; }
+          if (visible) { pl[front].playVideo(); } else { pl[front].pauseVideo(); }
+        }, { threshold: 0.1 }).observe(loopBox);
+      }
+
+      var apiScript = document.createElement("script");
+      apiScript.src = "https://www.youtube.com/iframe_api";
+      apiScript.async = true;
+      document.head.appendChild(apiScript);
+    }
+  }
 })();
