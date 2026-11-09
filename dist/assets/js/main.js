@@ -353,10 +353,25 @@
         }, { threshold: 0.1 }).observe(loopBox);
       }
 
-      var apiScript = document.createElement("script");
-      apiScript.src = "https://www.youtube.com/iframe_api";
-      apiScript.async = true;
-      document.head.appendChild(apiScript);
+      /* Load the YouTube script only once the video is near the screen, so it
+         does not compete with the first paint (the video sits below the slider) */
+      var apiLoaded = false;
+      var loadApi = function () {
+        if (apiLoaded) { return; }
+        apiLoaded = true;
+        var apiScript = document.createElement("script");
+        apiScript.src = "https://www.youtube.com/iframe_api";
+        apiScript.async = true;
+        document.head.appendChild(apiScript);
+      };
+      if ("IntersectionObserver" in window) {
+        var near = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) { near.disconnect(); loadApi(); }
+        }, { rootMargin: "400px 0px" });
+        near.observe(loopBox);
+      } else {
+        loadApi();
+      }
     }
   }
 })();

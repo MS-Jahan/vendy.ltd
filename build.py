@@ -14,6 +14,7 @@ Placeholders {{key}} are filled from site.json, the page front matter,
 and nav_<key> flags (" aria-current" on the active nav link).
 """
 import hashlib
+import subprocess
 import json
 import re
 import shutil
@@ -88,12 +89,26 @@ def build_page(file_path, partials, base_values):
     return meta["path"]
 
 
-def write_sitemap(paths):
+def lastmod(source):
+    """Date (YYYY-MM-DD) of the last commit that touched a source file, or ''."""
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", str(source.relative_to(ROOT))],
+            cwd=ROOT, capture_output=True, text=True, timeout=10,
+        ).stdout.strip()
+        return out if re.fullmatch(r"\d{4}-\d{2}-\d{2}", out) else ""
+    except Exception:
+        return ""
+
+
+def write_sitemap(paths, sources):
     urls = []
     for path in sorted(paths):
         if path.endswith(".html") or path == "/404.html":
             continue
-        urls.append(f"  <url><loc>{SITE['site_url']}{path}</loc></url>")
+        mod = lastmod(sources[path])
+        tag = f"<lastmod>{mod}</lastmod>" if mod else ""
+        urls.append(f"  <url><loc>{SITE['site_url']}{path}</loc>{tag}</url>")
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -118,11 +133,14 @@ def main():
     base_values["asset_v"] = digest.hexdigest()[:10]
 
     paths = []
+    sources = {}
     for page in sorted((SRC / "pages").glob("*.html")):
-        paths.append(build_page(page, partials, base_values))
+        built = build_page(page, partials, base_values)
+        paths.append(built)
+        sources[built] = page
 
     shutil.copytree(SRC / "static", DIST, dirs_exist_ok=True)
-    write_sitemap(paths)
+    write_sitemap(paths, sources)
     print(f"built {len(paths)} pages into {DIST.relative_to(ROOT)}/")
 
 
